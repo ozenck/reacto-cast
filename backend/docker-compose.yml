@@ -1,0 +1,44 @@
+version: '3'
+
+services:
+  # django:
+  #   build: .
+  #   # command: python manage.py runserver 0.0.0.0:8000
+  #   command: uvicorn reacto_cast.asgi:application --host 0.0.0.0 --port 8000 --reload
+  #   ports:
+  #     - "8000:8000"
+  #   depends_on:
+  #     - redis
+  #     - celery_worker
+  #   environment:
+  #     - REDIS_URL=redis://host.docker.internal:6379/0
+
+  redis:
+    image: "redis:alpine"
+    ports:
+      - "6379:6379"
+
+  celery_worker:
+    build: .
+    command: celery -A reacto_cast worker --loglevel=info
+    depends_on:
+      - redis
+      # - selenium-chrome
+
+  # celery_beat:
+  #   build: .
+  #   command: celery -A tasks.app beat --loglevel=info
+  #   depends_on:
+  #     - redis
+  #     - selenium-chrome
+
+  # selenium-chrome:
+  #   image: selenium/standalone-chrome:latest
+  #   ports:
+  #     - "4444:4444"
+  #   volumes:
+  #     - /dev/shm:/dev/shm  # Recommended to avoid shared memory issues
+  #   environment:
+  #     - SE_NODE_MAX_SESSIONS=2
+  #     - SE_NODE_OVERRIDE_MAX_SESSIONS=true
+  #     - SE_VNC_NO_PASSWORD=true
